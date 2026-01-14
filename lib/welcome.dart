@@ -56,8 +56,10 @@ class WelcomeScreen extends StatelessWidget {
                               elevation: 6,
                             ),
                             child: const Text(
+                             
                               'SIGN IN',
                               style: TextStyle(
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
                               ),
