@@ -209,41 +209,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ================= SEARCH =================
-  // Widget _buildSearch() {
-  //   return _glassContainer(
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  //       child: Row(
-  //         children: [
-  //           Icon(Icons.search_rounded, color: Colors.white.withOpacity(0.8)),
-  //           const SizedBox(width: 10),
-  //           Expanded(
-  //             child: TextField(
-  //               controller: _searchCtrl,
-  //               style: const TextStyle(color: Colors.white),
-  //               decoration: InputDecoration(
-  //                 hintText: 'Search by name or email...',
-  //                 hintStyle: TextStyle(color: Colors.white.withOpacity(0.55)),
-  //                 border: InputBorder.none,
-  //               ),
-  //             ),
-  //           ),
-  //           if (_query.isNotEmpty)
-  //             IconButton(
-  //               tooltip: 'Clear',
-  //               onPressed: () {
-  //                 _searchCtrl.clear();
-  //                 FocusScope.of(context).unfocus();
-  //               },
-  //               icon: Icon(Icons.close_rounded, color: Colors.white.withOpacity(0.75)),
-  //             ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   // ================= SECTION TITLE =================
   Widget _sectionTitle(String text) {
     return Row(

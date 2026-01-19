@@ -39,6 +39,13 @@ android {
     }
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-options")
+}
+
+apply(plugin = "com.google.gms.google-services")
+
+
 flutter {
     source = "../.."
 }

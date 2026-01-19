@@ -3,43 +3,33 @@ import 'package:flutter/foundation.dart';
 import '../database/app_db.dart';
 
 class OtpService {
-  static String generate6() => (Random().nextInt(900000) + 100000).toString();
+  static String _generateOtp() =>
+      (Random().nextInt(900000) + 100000).toString();
 
+  // ================= SEND OTP =================
   static Future<bool> sendOtp(String email) async {
     try {
-      final otp = generate6();
+      final otp = _generateOtp();
 
-      // Save OTP to database
+      // Save OTP
       await AppDB.instance.saveOtp(email: email, code: otp);
 
-      // Print OTP to terminal only
-      debugPrint("════════════════════════════════════════");
-      debugPrint("📧 OTP FOR: $email");
-      debugPrint("🔐 OTP CODE: $otp");
-      debugPrint("════════════════════════════════════════");
+      debugPrint('╔════════════════════════════════════════╗');
+      debugPrint('║          🔐 OTP FOR TESTING            ║');
+      debugPrint('╠════════════════════════════════════════╣');
+      debugPrint('║  Email: $email');
+      debugPrint('║  OTP Code: $otp');
+      debugPrint('╚════════════════════════════════════════╝');
 
       return true;
     } catch (e) {
-      debugPrint("❌ Error in sendOtp: $e");
+      debugPrint(' OTP generation error: $e');
       return false;
     }
   }
 
+  // ================= VERIFY OTP =================
   static Future<bool> verifyOtp(String email, String input) async {
-    try {
-      final isValid = await AppDB.instance.verifyOtp(
-        email: email,
-        input: input,
-      );
-      if (isValid) {
-        debugPrint("✅ OTP verified for $email");
-      } else {
-        debugPrint("❌ OTP verification failed for $email");
-      }
-      return isValid;
-    } catch (e) {
-      debugPrint("❌ Error verifying OTP: $e");
-      return false;
-    }
+    return AppDB.instance.verifyOtp(email: email, input: input);
   }
 }

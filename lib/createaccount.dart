@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import 'sigin.dart';
 import 'home.dart';
 import 'database/app_db.dart';
@@ -17,6 +19,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   bool _obscurePassword = true;
   bool _loading = false;
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   final _nameC = TextEditingController();
   final _emailC = TextEditingController();
   final _passwordC = TextEditingController();
@@ -28,6 +32,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _passwordC.dispose();
     super.dispose();
   }
+
+  // ================= VALIDATION =================
 
   bool _isValidEmail(String email) {
     return RegExp(
@@ -45,6 +51,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     return password.length >= 6 &&
         RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password);
   }
+
+  // ================= EMAIL SIGN UP =================
 
   Future<void> _signUp() async {
     final name = _nameC.text.trim();
@@ -132,7 +140,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         onOk: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => HomeScreen(currentEmail: email)),
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(currentEmail: email),
+            ),
           );
         },
       );
@@ -146,6 +156,73 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       );
     }
   }
+
+  // ================= GOOGLE SIGN UP =================
+
+  Future<void> _signUpWithGoogle() async {
+  setState(() => _loading = true);
+
+  try {
+  
+    await _googleSignIn.signOut();
+
+    final GoogleSignInAccount? googleUser =
+        await _googleSignIn.signIn();
+
+    if (googleUser == null) {
+      setState(() => _loading = false);
+      return;
+    }
+
+    final email = googleUser.email;
+    final name = googleUser.displayName ?? 'Google User';
+
+    if (await AppDB.instance.getUserByEmail(email) != null) {
+      setState(() => _loading = false);
+      CustomAlert.show(
+        context: context,
+        type: AlertType.error,
+        title: 'Oops...',
+        message: 'Email already registered',
+      );
+      return;
+    }
+
+    await AppDB.instance.createUser(
+      name: name,
+      email: email,
+      password: 'google_account',
+    );
+
+    setState(() => _loading = false);
+
+    CustomAlert.show(
+      context: context,
+      type: AlertType.success,
+      title: 'Success',
+      message: 'Account created with Google!',
+      onOk: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(currentEmail: email),
+          ),
+        );
+      },
+    );
+    } catch (e) {
+      setState(() => _loading = false);
+      CustomAlert.show(
+        context: context,
+        type: AlertType.error,
+        title: 'Google Error',
+        message: e.toString(),
+      );
+    }
+  }
+
+
+  // ================= UI =================
 
   @override
   Widget build(BuildContext context) {
@@ -161,21 +238,17 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
               ),
             ),
-
             SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                   ),
-
                   const SizedBox(height: 40),
-
                   const Text(
                     'Create Account',
                     style: TextStyle(
@@ -184,7 +257,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-
                   const SizedBox(height: 40),
 
                   ClipRRect(
@@ -211,15 +283,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             _password(),
                             const SizedBox(height: 24),
 
+                            // SIGN UP BUTTON
                             SizedBox(
                               width: double.infinity,
                               height: 52,
                               child: ElevatedButton(
                                 onPressed: _loading ? null : _signUp,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white.withOpacity(
-                                    0.35,
-                                  ),
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.35),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
@@ -235,31 +307,38 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             ),
 
                             const SizedBox(height: 20),
-                            const Text(
-                              'Or',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            const SizedBox(height: 20),
+                            const Text('Or',
+                                style: TextStyle(color: Colors.white70)),
+                            const SizedBox(height: 14),
 
-                            Container(
-                              height: 48,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: Colors.white.withOpacity(0.18),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/google.svg',
-                                    height: 20,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  const Text(
-                                    'Continue with Google',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
+
+                            // 🔵 CONTINUE WITH GOOGLE
+                            GestureDetector(
+                              onTap: _loading ? null : _signUpWithGoogle,
+                              child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: Colors.white.withOpacity(0.18),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/icons/google.svg',
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      _loading
+                                          ? 'Signing in...'
+                                          : 'Continue with Google',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -305,6 +384,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     );
   }
 
+  // ================= WIDGETS =================
+
   Widget _input(
     TextEditingController c,
     IconData icon,
@@ -343,7 +424,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             _obscurePassword ? Icons.visibility_off : Icons.visibility,
             color: Colors.white,
           ),
-          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+          onPressed: () =>
+              setState(() => _obscurePassword = !_obscurePassword),
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.25),
@@ -354,4 +436,5 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       ),
     );
   }
+
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "3155562762",
+    "project_id": "login-bad5e",
+    "storage_bucket": "login-bad5e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3155562762:android:9991ffe160c7d5c6acaaf3",
+        "android_client_info": {
+          "package_name": "com.example.login_secure"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjlecskmTzKMRHrkDityDmusPGCIUr_Ro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

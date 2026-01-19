@@ -33,17 +33,14 @@ dependencies:
 
   flutter_svg: ^2.0.9
   path: ^1.9.1
-  
-  # Email sending
-  mailer: ^6.1.0
+  google_sign_in: ^6.2.1
 
   # SQLite
   sqflite: ^2.3.0
 
   # Desktop (Windows/macOS/Linux) support
-  sqflite_common_ffi: ^2.3.6
+  sqflite_common_ffi: ^2.3.5
   sqlite3_flutter_libs: ^0.5.24
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -92,8 +89,7 @@ flutter:
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
+  # list giving the asset and other descriptors. For
   # example:
   # fonts:
   #   - family: Schyler
